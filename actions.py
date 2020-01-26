@@ -6,7 +6,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
 
 client = gspread.authorize(creds)
 
-# initialiserer sheet som excel-skjemaet i google
+# initializes sheet like a sheet in google
 sheet = client.open("vurdering").sheet1
 
 '''adds student at bottom of list
@@ -40,7 +40,7 @@ def insert_stud_alphabetical(name):
 
     for n in range(len(name_list)):
         name = name_list[n]
-        print(f'Fant navn {name}')
+        print(f'Found name :  {name}')
         sheet.delete_row(n+2)
         sheet.update_cell(n +2, 1, name)
         cell = sheet.find(name)
@@ -101,6 +101,6 @@ def get_tests_grades_review(tgr):
 
 
 if __name__=="__main__":
-    #new_stud('heine')
+    #new_stud('Max')
     #get_stud_records('Doffen')
     get_tests_grades_review("review 1")
