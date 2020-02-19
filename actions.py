@@ -1,6 +1,7 @@
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from pprint import pprint
+from oauth2client.service_account import ServiceAccountCredentials
+
 scope = ["https://spreadsheets.google.com/feeds",'https://www.googleapis.com/auth/spreadsheets',"https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
 
@@ -8,6 +9,7 @@ client = gspread.authorize(creds)
 
 # initializes sheet like a sheet in google
 sheet = client.open("vurdering").sheet1
+
 
 '''adds student at bottom of list
     param : string name
@@ -32,6 +34,7 @@ def new_stud(name):
 '''
 def insert_stud_alphabetical(name):
     name_list = sheet.col_values(1)
+    print("Sheet.col_values", name_list)
     name_list.append(name.upper())
     name_list = name_list[1:]
     new_stud(name)
@@ -82,25 +85,31 @@ def get_stud(name):
     Find review in register
     param : find
 '''
-def get_tests_grades_review(tgr):
-    try:
-        cell = sheet.find(tgr.upper())
-        print(f"Fant {tgr} i rad {cell.row} og kol {cell.col}")
-        students = sheet.col_values(1)
-        tgr_col = sheet.col_values(cell.col)
-        view = []
-        for stud in students:
-            print(stud)
-            #TODO print student, review side ny side
-            #for t in tgr_col[1:]:
-            #    print(t)
+def get_tests_grades_review():
+    students = sheet.col_values(1)
+    subjects = sheet.row_values(1)
+    subjects = subjects[1:]
+    print("Length of subjects", len(subjects[1:]))
+    view = []
+    for stud in students[1:]:
+        print("\n")
+        cell = sheet.find(stud.upper())
+        print(stud)
+        view.append(stud)
+        tgr_row = sheet.row_values(cell.row)
+        tgr_row = tgr_row[1:]
+        print("Length of tgr", len(tgr_row))
+        #TODO print student, review side ny side
+        for t in range(len(tgr_row)):
+            view.append(subjects[t])
+            view.append(tgr_row[t])
+            print(subjects[t], ": ", tgr_row[t])
 
-
-    except gspread.exceptions.CellNotFound:
-        print('--------------------------\n fant ikke navn\n')
+    pprint(view)
 
 
 if __name__=="__main__":
     #new_stud('Max')
+    #insert_stud_alphabetical('Max')
     #get_stud_records('Doffen')
-    get_tests_grades_review("review 1")
+    get_tests_grades_review()
